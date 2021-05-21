@@ -131,7 +131,8 @@ def next_generation(generation, Distance, P_mutate, P_crossover):
 
 def genetic_algorithm(datasource="Data/CityData.rtf"):
     generation = []
-    Distance = getData(datasource)
+    # Distance = getData(datasource)
+    Distance = np.loadtxt(datasource)
     city_num = len(Distance)
     generation = generate_population(city_num, POPULATION)
     for i in range(ITERATION):
