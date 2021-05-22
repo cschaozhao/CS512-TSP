@@ -6,20 +6,19 @@ from matplotlib import pyplot as plt
 import math
 from draw import draw
 
-POPULATION = 200
-ITERATION = 500
-BESTFITNESS = 10000
+POPULATION = 500
+ITERATION = 1000
+BESTFITNESS = 100000
 BESTROUTE = []
+C5 = "Data/5cities.txt"
+C15 = "Data/15cities.txt"
+C26 = "Data/26cities.rtf"
+C42 = "Data/42cities.rtf"
+C48 = "Data/48cities.rtf"
 
 
 def getData(filename):
-    Distance = []
-    with open(filename, 'r+') as file:
-        lines = file.readlines()
-        for l in lines:
-            row = re.findall('\d+', l)
-            results = list(map(int, row))
-            Distance.append(results)
+    Distance = np.loadtxt(filename)
     return Distance
 
 
@@ -39,7 +38,7 @@ def generate_population(city_number, population_size):
     return generation
 
 
-def fitness(tour, Distance):
+def fitness_distance(tour, Distance):
     dist = 0
     for i in range(len(tour) - 1):
         u, v = tour[i], tour[i + 1]
@@ -51,19 +50,18 @@ def fitness(tour, Distance):
 
 def population_fitness(generation, Distance):
     global BESTFITNESS, BESTROUTE
-
     fit_generation = []
     fit_prob_generation = []
     sum_fit = 0
     for i in range(len(generation)):
-        fit = fitness(generation[i], Distance)
+        fit = fitness_distance(generation[i], Distance)
         if fit < BESTFITNESS:
             BESTFITNESS = fit
             BESTROUTE = generation[i][:]
             print('The best rout so far:', BESTROUTE, '\nThe best distance so far:', BESTFITNESS)
             print('pending...')
-            draw(BESTROUTE)
-        fit_generation.append(1 / fit)
+            draw(BESTROUTE, len(Distance))
+        fit_generation.append(1 / (fit - BESTFITNESS + 10))
     for i in range(len(fit_generation)):
         sum_fit += fit_generation[i]
     for i in range(len(fit_generation)):
@@ -82,8 +80,7 @@ def cum_fit_prob(generation, Distance):
     return cum_prob
 
 
-def select(generation, Distance):
-    cum_prob = cum_fit_prob(generation, Distance)
+def select(cum_prob):
     ran = random.random()
     if ran < cum_prob[0]:
         return 0
@@ -94,20 +91,21 @@ def select(generation, Distance):
 
 
 def crossover(route_1, route_2):
-    start = random.randint(0, len(route_1) - 1)
-    end = random.randint(start, len(route_1))
+    start = random.randint(0, (len(route_1) - 1))
+    end = random.randint((start + 1), len(route_1))
     new_route_1 = route_1[start:end]
-
+    new_route_2 = route_2[start:end]
     for i in range(len(route_2)):
         if route_2[i] not in new_route_1:
             new_route_1.append(route_2[i])
-
-    return new_route_1
+    for i in range(len(route_1)):
+        if route_1[i] not in new_route_2:
+            new_route_2.append(route_1[i])
+    return new_route_1, new_route_2
 
 
 def mutate(P, route):
-    r = random.randint(1, 100)
-    p = r / 100
+    p = random.random()
     length = len(route)
     if p <= P:
         index_1 = random.randint(0, length - 1)
@@ -120,27 +118,32 @@ def mutate(P, route):
 
 def next_generation(generation, Distance, P_mutate, P_crossover):
     new_generation = []
-    for i in range(len(generation)):
-        parentA_index = select(generation, Distance)
-        parentB_index = select(generation, Distance)
-        child = crossover(generation[parentA_index], generation[parentB_index])
-        child = mutate(P_mutate, child)
-        new_generation.append(child)
+    cum_prob = cum_fit_prob(generation, Distance)
+    for i in range(int(len(generation) / 2)):
+        parentA_index = select(cum_prob)
+        parentB_index = select(cum_prob)
+        if random.random() < P_crossover:
+            child_1, child_2 = crossover(generation[parentA_index], generation[parentB_index])
+            child_1 = mutate(P_mutate, child_1)
+            child_2 = mutate(P_mutate, child_2)
+            new_generation.append(child_1)
+            new_generation.append(child_2)
+        else:
+            new_generation.append(mutate(P_mutate, generation[parentA_index]))
+            new_generation.append(mutate(P_mutate, generation[parentB_index]))
     return new_generation
 
 
-def genetic_algorithm(datasource="Data/CityData.rtf"):
-    generation = []
-    # Distance = getData(datasource)
-    Distance = np.loadtxt(datasource)
+def genetic_algorithm(datasource):
+    Distance = getData(datasource)
     city_num = len(Distance)
     generation = generate_population(city_num, POPULATION)
     for i in range(ITERATION):
-        generation = next_generation(generation, Distance, P_mutate=0.05, P_crossover=0.8)
+        generation = next_generation(generation, Distance, P_mutate=0.15, P_crossover=0.8)
     print('The Best Route is: ', BESTROUTE)
     print('The Total Distance is: ', BESTFITNESS)
     print('complete!!')
 
 
+genetic_algorithm(C42)
 
-genetic_algorithm(datasource="Data/CityData.rtf")
