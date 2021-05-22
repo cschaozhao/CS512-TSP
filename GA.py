@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib
 from matplotlib import pyplot as plt
 import math
-from draw import draw
+from draw import draw, draw_real
 
 POPULATION = 500
 ITERATION = 1000
@@ -58,9 +58,10 @@ def population_fitness(generation, Distance):
         if fit < BESTFITNESS:
             BESTFITNESS = fit
             BESTROUTE = generation[i][:]
-            print('The best rout so far:', BESTROUTE, '\nThe best distance so far:', BESTFITNESS)
+            # print('The best rout so far:', BESTROUTE)
+            print('The best distance so far:', BESTFITNESS)
             print('pending...')
-            draw(BESTROUTE, len(Distance))
+            draw_real(BESTROUTE, Distance)
         fit_generation.append(1 / (fit - BESTFITNESS + 10))
     for i in range(len(fit_generation)):
         sum_fit += fit_generation[i]
