@@ -27,8 +27,7 @@ def compute_coordinates(Distance):
     return X, Y
 
 
-def draw_real(route, Distance):
-    X, Y = compute_coordinates(Distance)
+def draw_real(route, X, Y):
     for i in range(len(X)):
         plt.plot(X[i], Y[i], 'ob')
     for index in range(len(route)):
