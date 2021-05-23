@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib
 from matplotlib import pyplot as plt
 import math
+import time
 from draw import draw, draw_real, compute_coordinates
 
 POPULATION = 500
@@ -62,6 +63,7 @@ def population_fitness(generation, Distance, X, Y):
             print('The best distance so far:', BESTFITNESS)
             print('pending...')
             draw_real(BESTROUTE, X, Y)
+            time.sleep(1.5)
         fit_generation.append(1 / (fit - BESTFITNESS + 10))
     for i in range(len(fit_generation)):
         sum_fit += fit_generation[i]
