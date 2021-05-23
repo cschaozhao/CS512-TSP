@@ -11,10 +11,10 @@ POPULATION = 500
 ITERATION = 1000
 BESTFITNESS = 100000
 BESTROUTE = []
-C5 = "Data/5cities.txt"
+C5 = "Data/5cities.txt"     # wrong data
 C15 = "Data/15cities.txt"
 C26 = "Data/26cities.rtf"
-C42 = "Data/42cities.rtf"
+C42 = "Data/42cities.rtf"   # wrong data
 C48 = "Data/48cities.rtf"
 
 
