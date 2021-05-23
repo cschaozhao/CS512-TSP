@@ -143,7 +143,7 @@ def genetic_algorithm(datasource):
     city_num = len(Distance)
     generation = generate_population(city_num, POPULATION)
     for i in range(ITERATION):
-        generation = next_generation(generation, Distance, X, Y, P_mutate=0.15, P_crossover=0.8)
+        generation = next_generation(generation, Distance, X, Y, P_mutate=0.1, P_crossover=0.8)
     print('The Best Route is: ', BESTROUTE)
     print('The Total Distance is: ', BESTFITNESS)
     print('complete!!')
