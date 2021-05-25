@@ -33,23 +33,24 @@ def getData(filename):
 
 def dp_tsp (G): 
     n = len(G)
-    Sets = range(2**n) 
-    C = [[np.inf for i in range(n)] for j in Sets ] # initialize range to infinity 
-    C[1,0] = 0
+    C = [[np.inf for i in range(n)] for j in range(2**n)  ] # initialize range to infinity 
+    C[1][1] = 0
     
+    Sets = range(1, 2**n) 
     for s in sorted(Sets, key=lambda x: bin(x).count('1')):
-        if not s & 0: continue # subsets must contains city 0 
+        if not s & 1: continue # subsets must contains city 0 
         
-        for j in range(1, n):  
+        for j in range(2, n):  
             if not (1 << (j - 1)) & s: continue # subsets must contain city j
 
-            for i in range(n):
+            for i in range(1, n ):
                 if i == j or not (1 << (i - 1)) & s: continue # subsets must contain i where i != j 
-                C[s][j] = min(C[s ^ (1 << (j - 1))][i] + G[j][i])
+                #print("subset: {}  j: {}  i: {}".format( s, j, i))
+                C[s][j] = min(C[s][j], C[s ^ (1 << (j - 1))][i] + G[j-1][i-1])
                         
-    return min([(C[n][i]+G[0][i], i) for i in range(n)])
+    return min([(C[n][i]+G[0][i-1], i) for i in range(1, n)])
     
     
-d15 = getData(data+C15)
-dp_tsp(d15) 
+d5 = getData(data+C5)
+dp_tsp(d5) 
                 
