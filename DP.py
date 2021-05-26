@@ -48,7 +48,7 @@ def dp_tsp (G):
                 #print("subset: {}  j: {}  i: {}".format( s, j, i))
                 C[s][j] = min(C[s][j], C[s ^ (1 << (j - 1))][i] + G[j-1][i-1])
                         
-    return min([(c[(2**n)-1][j] + G[0][j-1], j) for j in range(1, n)])
+    return min([(C[(2**n)-1][j] + G[0][j-1], j) for j in range(1, n)])
     
 d5 = getData(data+C5)   
 d15 = getData(data+C15)
