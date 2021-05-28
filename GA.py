@@ -4,16 +4,17 @@ import numpy as np
 import matplotlib
 from matplotlib import pyplot as plt
 import math
-from draw import draw
+import time
+from draw import draw, draw_real, compute_coordinates
 
 POPULATION = 500
 ITERATION = 1000
 BESTFITNESS = 100000
 BESTROUTE = []
-C5 = "Data/5cities.txt"
+C5 = "Data/5cities.txt"     # wrong data
 C15 = "Data/15cities.txt"
 C26 = "Data/26cities.rtf"
-C42 = "Data/42cities.rtf"
+C42 = "Data/42cities.rtf"   # wrong data
 C48 = "Data/48cities.rtf"
 
 
@@ -48,7 +49,7 @@ def fitness_distance(tour, Distance):
     return dist
 
 
-def population_fitness(generation, Distance):
+def population_fitness(generation, Distance, X, Y):
     global BESTFITNESS, BESTROUTE
     fit_generation = []
     fit_prob_generation = []
@@ -58,9 +59,11 @@ def population_fitness(generation, Distance):
         if fit < BESTFITNESS:
             BESTFITNESS = fit
             BESTROUTE = generation[i][:]
-            print('The best rout so far:', BESTROUTE, '\nThe best distance so far:', BESTFITNESS)
+            # print('The best rout so far:', BESTROUTE)
+            print('The best distance so far:', BESTFITNESS)
             print('pending...')
-            draw(BESTROUTE, len(Distance))
+            draw_real(BESTROUTE, X, Y)
+            time.sleep(1.5)
         fit_generation.append(1 / (fit - BESTFITNESS + 10))
     for i in range(len(fit_generation)):
         sum_fit += fit_generation[i]
@@ -70,8 +73,8 @@ def population_fitness(generation, Distance):
     return fit_prob_generation
 
 
-def cum_fit_prob(generation, Distance):
-    prob = population_fitness(generation, Distance)
+def cum_fit_prob(generation, Distance, X, Y):
+    prob = population_fitness(generation, Distance, X, Y)
     cum = 0
     cum_prob = []
     for i in range(len(prob)):
@@ -116,9 +119,9 @@ def mutate(P, route):
     return route
 
 
-def next_generation(generation, Distance, P_mutate, P_crossover):
+def next_generation(generation, Distance, X, Y, P_mutate, P_crossover):
     new_generation = []
-    cum_prob = cum_fit_prob(generation, Distance)
+    cum_prob = cum_fit_prob(generation, Distance, X, Y)
     for i in range(int(len(generation) / 2)):
         parentA_index = select(cum_prob)
         parentB_index = select(cum_prob)
@@ -136,14 +139,14 @@ def next_generation(generation, Distance, P_mutate, P_crossover):
 
 def genetic_algorithm(datasource):
     Distance = getData(datasource)
+    X, Y = compute_coordinates(Distance)
     city_num = len(Distance)
     generation = generate_population(city_num, POPULATION)
     for i in range(ITERATION):
-        generation = next_generation(generation, Distance, P_mutate=0.15, P_crossover=0.8)
+        generation = next_generation(generation, Distance, X, Y, P_mutate=0.1, P_crossover=0.8)
     print('The Best Route is: ', BESTROUTE)
     print('The Total Distance is: ', BESTFITNESS)
     print('complete!!')
 
 
-genetic_algorithm(C42)
-
+genetic_algorithm(C26)
