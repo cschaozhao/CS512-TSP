@@ -1,10 +1,10 @@
 import numpy as np
-
+import time
 class Solver_Tsp_Brute():
     def __init__(self,arr):
         self.arr = arr
         self.num = len(arr)
-        self.result = {}
+        self.result = np.sum(arr)
         self.route=[]
         self.total_set = set([i for i in range(self.num)])
 
@@ -18,8 +18,11 @@ class Solver_Tsp_Brute():
         '''
         unvisited = self.total_set-set(visited)
         if not len(unvisited):
-            route = (i+1 for i in visited)
-            self.result[route] = sum_dist+self.arr[last_visit][0]
+            route = [i+1 for i in visited]
+            result = sum_dist+self.arr[last_visit][0]
+            if result<self.result:
+                self.result = result
+                self.route = route
 
         else:
             for v in unvisited:
@@ -31,14 +34,14 @@ class Solver_Tsp_Brute():
         :return:
         '''
         self._brute_force()
-        min_route = min(self.result,key=self.result.get)
-        min_sum_dist = self.result[min_route]
-        return list(min_route),min_sum_dist
+        return self.route,self.result
 
 
 file_name = 'Data/5cities.txt'
 arr = np.loadtxt(file_name)
 solver_brute = Solver_Tsp_Brute(arr)
+t1 = time.time()
 route, dist = solver_brute.tsp_brute_force()
+print('time: ',time.time()-t1)
 print('Route: ',route,'\nDistance: ', dist)
 
