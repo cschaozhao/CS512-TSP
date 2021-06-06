@@ -17,8 +17,11 @@ C48 = "48cities.rtf"
 
 
 class Solver_DP(): 
-    def __init__(self):
-        self.route=[]
+    def __init__(self, data):      
+        self.distances = self.getData(data)
+        self.n = len(self.distances)      
+        self.prev=[[-1 for i in range(self.n+1)] for j in range(2**self.n) ]
+        self.itinerary = []
 
     def getData(self, filename):
         Distance = []
@@ -35,8 +38,8 @@ class Solver_DP():
 
 
     def dp_tsp (self, G): 
-        n = len(G)
-        C = [[np.inf for i in range(n+1)] for j in range(2**n)  ] # initialize range to infinity 
+        n = self.n
+        C = [[np.inf for i in range(n+1)] for j in range(2**n) ] # initialize range to infinity 
         C[1][1] = 0
         
         Sets = range(1, 2**n) 
@@ -49,16 +52,37 @@ class Solver_DP():
                 for i in range(1, n+1):
                     if i == j or not (1 << (i - 1)) & s: continue # subsets must contain i where i != j 
                     #print("subset: {}  j: {}  i: {}".format( s, j, i))
-                    C[s][j] = min(C[s][j], C[s ^ (1 << (j - 1))][i] + G[j-1][i-1])
-                            
-        return min([(C[(2**n)-1][j] + G[0][j-1], j) for j in range(1, n)])
+                    
+                    old = C[s][j]
+                    new = C[s ^ (1 << (j - 1))][i] + G[j-1][i-1]
+                    if old > new: 
+                        C[s][j] = new 
+                        self.prev[s][j] = i
+        
+        final  = min([(C[(2**self.n)-1][j] + G[j-1][0], j) for j in range(1, self.n)])
+        last = final[1]
+        rem = (2**self.n)-1
+        
+        #print(self.prev)
+        # build iternary from the best path data 
+        for i in range(0,self.n): 
+            
+            self.itinerary.append(last)
+            old_last = last 
+            last = self.prev[rem][last]      
+            rem = rem ^ (1 << (old_last - 1))
+            
+        self.itinerary.reverse()
+        
+        return final
     
-solver = Solver_DP()
-d5 = solver.getData(data+C5)   
-d15 = solver.getData(data+C15)
-d26 = solver.getData(data+C26)
-d42 = solver.getData(data+C42)
-d48 = solver.getData(data+C48)
-
-solver.dp_tsp(d15) 
+    
+    def dynamic_algorithm(self):
+        X, Y = compute_coordinates(self.distances)
+        result = self.dp_tsp(self.distances)
+        return result, self.itinerary
+    
+solver = Solver_DP(data+C5)
+x, y = solver.dynamic_algorithm()
+print(x,y)
                 
