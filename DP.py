@@ -35,7 +35,9 @@ class Solver_DP():
             Distance.append(results)
             
         return Distance
-
+    
+    def setData(self, filename): 
+        self.distances = self.getData(filename)
 
     def dp_tsp (self, G): 
         n = self.n
@@ -77,12 +79,18 @@ class Solver_DP():
         return final
     
     
-    def dynamic_algorithm(self):
-        X, Y = compute_coordinates(self.distances)
+    def dynamic_algorithm(self):   
         result = self.dp_tsp(self.distances)
+        print("Min distance: "+str(result)+ " Itinerary: " + str(self.itinerary) )
+        
+        #if DRAW: 
+        #    X, Y = compute_coordinates(self.distances)
+        #    draw_real(self.itinerary, X, Y)
         return result, self.itinerary
     
+'''    
 solver = Solver_DP(data+C5)
 x, y = solver.dynamic_algorithm()
 print(x,y)
+'''
                 

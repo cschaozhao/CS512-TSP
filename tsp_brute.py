@@ -7,6 +7,10 @@ class Solver_Tsp_Brute():
         self.result = np.sum(arr)
         self.route=[]
         self.total_set = set([i for i in range(self.num)])
+        
+    def getData(filename):
+        Distance = np.loadtxt(filename)
+        return Distance
 
     def _brute_force(self,last_visit=0 , visited=[0],sum_dist=0):
         '''
@@ -34,9 +38,10 @@ class Solver_Tsp_Brute():
         :return:
         '''
         self._brute_force()
+        print('Route: ',self.route,'\nDistance: ', self.result)
         return self.route,self.result
 
-
+'''
 file_name = 'Data/5cities.txt'
 arr = np.loadtxt(file_name)
 solver_brute = Solver_Tsp_Brute(arr)
@@ -44,4 +49,4 @@ t1 = time.time()
 route, dist = solver_brute.tsp_brute_force()
 print('time: ',time.time()-t1)
 print('Route: ',route,'\nDistance: ', dist)
-
+'''
